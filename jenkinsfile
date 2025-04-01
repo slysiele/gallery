@@ -3,6 +3,9 @@ pipeline {
      tools{
         nodejs "node"
     }
+    environment {
+        RENDER_URL = 'https://gallery-lnnq.onrender.com'  
+    }
 
     stages {
         stage('Checkout Code') {
@@ -34,9 +37,13 @@ pipeline {
                 sh 'node server.js'
             }
         }
-        stage('Slack') {
+                stage('Notify Slack') {
             steps {
-                slackSend message: 'Silvestor_IP1 deployed  SUCCESS'
+                slackSend(
+                    channel: '#all-silvestorip1',
+                    color: 'good',
+                    message: "*Silvestor_IP1 Deployed Successfully!* \n *URL:* ${RENDER_URL}"
+                )
             }
         }
     }
