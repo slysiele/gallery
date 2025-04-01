@@ -1,5 +1,8 @@
 pipeline {
     agent any
+     tools{
+        nodejs "node"
+    }
 
     stages {
         stage('Checkout Code') {
@@ -20,9 +23,20 @@ pipeline {
             }
         }
 
+          stage('Build Application') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+
         stage('Deploy to Render') {
             steps {
                 sh 'node server.js'
+            }
+        }
+        stage('Slack') {
+            steps {
+                slackSend message: 'Silvestor_IP1 deployed  SUCCESS'
             }
         }
     }
