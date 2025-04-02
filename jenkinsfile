@@ -19,9 +19,18 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
+        stage('Run Tests') {
             steps {
-                echo 'Skipping tests as the project does not have them yet.'
+                script {
+                    try {
+                        sh 'npm test'
+                    } catch (Exception e) {
+                        emailext subject: "Jenkins Build Failed: Tests Failed",
+                                 body: "The tests failed in the pipeline. Please check Jenkins logs for more details.",
+                                 to: 'silvestor.sielei@student.moringaschool.com'
+                        error("Tests failed!")
+                    }
+                }
             }
         }
 
