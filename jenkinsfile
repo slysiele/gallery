@@ -4,7 +4,7 @@ pipeline {
     environment {
         NODEJS_HOME = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
         PATH = "${NODEJS_HOME}/bin:${env.PATH}"
-        SLACK_WEBHOOK = 'https://hooks.slack.com/services/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'
+        SLACK_WEBHOOK = 'https://hooks.slack.com/services/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'
         RENDER_URL = 'https://gallery-1-eecc.onrender.com'
     }
 
