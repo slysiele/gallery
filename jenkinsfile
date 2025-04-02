@@ -27,9 +27,11 @@ pipeline {
                     try {
                         sh 'npm test'
                     } catch (Exception e) {
-                        emailext subject: "Jenkins Build Failed: Tests Failed",
-                                 body: "The tests failed in the pipeline. Please check Jenkins logs for more details.",
-                                 to: 'silvestor.sielei@student.moringaschool.com'
+                        emailext(
+                            subject: "Jenkins Build Failed: Tests Failed",
+                            body: "The tests failed in the pipeline. Please check Jenkins logs for more details.",
+                            to: 'silvestor.sielei@student.moringaschool.com'
+                        )
                         error("Tests failed!")
                     }
                 }
@@ -46,8 +48,15 @@ pipeline {
         stage('Send Slack Notification') {  
             steps {
                 script {
-                    def slackMessage = "🚀 *Deployment Successful!* \nBuild ID: ${env.BUILD_ID} \nLive URL: ${env.RENDER_URL}"
-                    sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\": \"${slackMessage}\"}' ${env.SLACK_WEBHOOK}"
+                    def slackMessage = """
+                        🚀 *Deployment Successful!* 
+                        *Build ID:* ${env.BUILD_ID} 
+                        *Live URL:* ${env.RENDER_URL}
+                    """
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{\"text\": \"${slackMessage}\"}' ${env.SLACK_WEBHOOK}
+                    """
                 }
             }
         }
@@ -56,9 +65,17 @@ pipeline {
     post {
         success {
             echo 'Deployment Successful!'
+            sh """
+                curl -X POST -H 'Content-type: application/json' \
+                --data '{\"text\": \"✅ Jenkins Deployment Successful: ${RENDER_URL}\"}' ${SLACK_WEBHOOK}
+            """
         }
         failure {
             echo 'Deployment Failed!'
+            sh """
+                curl -X POST -H 'Content-type: application/json' \
+                --data '{\"text\": \"❌ Jenkins Deployment Failed! Check the logs.\"}' ${SLACK_WEBHOOK}
+            """
         }
     }
 }
