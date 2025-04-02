@@ -4,6 +4,8 @@ pipeline {
     environment {
         NODEJS_HOME = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
         PATH = "${NODEJS_HOME}/bin:${env.PATH}"
+        SLACK_WEBHOOK = 'https://hooks.slack.com/services/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'
+        RENDER_URL = 'https://gallery-1-eecc.onrender.com'
     }
 
     stages {
@@ -38,6 +40,15 @@ pipeline {
             steps {
                 sh 'node server.js &'
                 echo 'Application is now running...'
+            }
+        }
+
+        stage('Send Slack Notification') {  
+            steps {
+                script {
+                    def slackMessage = "🚀 *Deployment Successful!* \nBuild ID: ${env.BUILD_ID} \nLive URL: ${env.RENDER_URL}"
+                    sh "curl -X POST -H 'Content-type: application/json' --data '{\"text\": \"${slackMessage}\"}' ${env.SLACK_WEBHOOK}"
+                }
             }
         }
     }
